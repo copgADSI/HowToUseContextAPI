@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css"
+        integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="styles.css">
+    <title>Todo List con Context API</title>
+</head>
+
+<body>
+    <div class="container_">
+        <h1>Tutorial básico de <b>Context API</b> </h1>
+        <p>
+            En esta explicación desarrollaremos un pequeño todo list para entender el uso de Context API.
+            <br>
+            Context API nos permite compartir valores y funcionalidades
+            a través del árbol de componentes sin necesidad de usar props.
+        </p>
+        <br>
+        <ol>
+            <li>
+                <div class="label">
+                    Lo primero es crear nuestra aplicación de React
+                </div>
+                <div class="copy-text">
+                    <input type="text" readonly name="" id="" class="text" value="npx create-react-app todo-list">
+                    <button>
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+            </li>
+            <li>
+                <div class="label">
+                    Creamos la siguiente estructura de carpetas
+                </div>
+                <div class="copy-text images  img_"></div>
+            </li>
+            <li>
+                <div class="label">
+                    Dentro de nuestros componentes tendremos 3 archivos
+                    que son el container generar, el todo indivialmente y nuestros
+                    estilos.
+                </div>
+                <div class="copy-text  images img_components"></div>
+
+            </li>
+
+            <li>
+                <div class="label">
+                </div>
+                <div class="copy-text">
+                    <textarea name="" id="" cols="99" rows="1" class="text" readonly>
+                        .todo {
+                            display: flex;
+                            margin: 0 auto;
+                            padding: 10px;
+                            margin-top: 20px;
+                            width: 300px;
+                            min-width: 50vh;
+                            justify-content: space-around;
+                            background-color: #fff;
+                            border-radius: 20px;
+                        }
+                        
+                        .todo button{
+                            border-radius: 4px;
+                            width: 80px;
+                            margin: 2px;
+                        }
+                        
+                        #delete{
+                            background: red;
+                        }
+                        #sucess{
+                            background: green;
+                        }
+                    </textarea>
+                    <button>
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+            </li>
+            <li>
+                <div class="label">
+                    Siguiendo con la estructura de carpetas, crearemos a nivel de la carpeta <b>context</b>
+                    nuestro proveedor, que será el encargado de gestionar nuestro <b>TODO LIST</b><br>
+                    lo nombraremos como : <b>TodoProvider.jsx</b>
+                </div>
+
+                <div class="label">
+                    Ahora, dentro del proveedor se creará un nuevo contexto que almacenará
+                    la lógica para crear,actualizar y eliminar un todo.
+                </div>
+                <div class="copy-text images  img_context"></div>
+                <div class="label">Lógica de nuestro CRUD.</div>
+                <div class="copy-text images  img_provider"></div>
+                <div class="label">Métodos que compartimos a través de nuestro context.</div>
+                <div class="copy-text images  img_context_shared"></div>
+                <div class="copy-text">
+                    <textarea readonly cols="99" rows="1">
+                        import { createContext, useState } from "react"
+
+                        export const TodoContext = createContext();
+
+                        const TodoProvider = ({ children }) => {
+
+                            const [todos, setTodos] = useState([]);
+
+                            const addTask = (todo) => {
+                                todos.push(todo);
+                            }
+
+                            const deleteTask = (todo) => {
+                                setTodos(current =>
+                                    current.filter(todo_ => {
+                                        return todo_.id !== Number(todo.id);
+                                    }),
+                                );
+                            }
+
+                            const updateTask = (event) => {
+                                const { id: todo_id } = event.target;
+                                setTodos(current =>
+                                    current.map(todo => {
+                                        if (todo.id === Number(todo_id)) {
+                                            return { ...todo, completed: !todo.completed };
+                                        }
+                                        return todo;
+                                    }),
+                                );
+                            }
+
+                            return (
+                                <TodoContext.Provider value={{
+                                    setTodos,
+                                    addTask,
+                                    deleteTask,
+                                    updateTask,
+                                    todos,
+                                }}>
+                                    {children}
+                                </TodoContext.Provider>
+                            )
+                        }
+
+                        export default TodoProvider
+
+                    </textarea>
+                    <button>
+                        <i class="fa-solid fa-copy "></i>
+                    </button>
+                </div>
+            </li>
+
+            <li>
+                <div class="label">
+                    Ahora, no dirigimos al <b>index.js</b> de nuestro proyecto y haremos las siguientes
+                    modificaciones:
+                </div>
+                <div class="label">
+                    Instanciamos el proveedor del TODO para poder usar por medio de nuestro context
+                    los distintos métodos.
+                </div>
+                <div class="copy-text images  img_index"></div>
+            </li>
+            <li>
+                <div class="label">
+                    En la carpeta <b>hooks</b> crearemos nuestro propio hook personalizado,
+                    recordemos que para crear hooks personalizados
+                    debemos hacer uso de la palabra <b>use</b> para que React lo interprete.
+                    Lo llamaremos <b>useInitializeTodo.jsx</b>
+                </div>
+                <div class="copy-text images  img_hooks"></div>
+                <div class="label">Código que irá dentro del hook.</div>
+                <div class="label">
+                    Para hacer uso de nuestro context usaremos el hook <b>useContext</b>,
+                    el cual nos sirve para poder implementar la API de Context (TodoContext.jsx).
+                </div>
+                <div class="copy-text">
+                    <textarea name="" id="" cols="99" rows="1" class="text" readonly>
+                        import { useContext } from "react";
+                        import { useState } from "react"
+                        import { TodoContext } from "../context/TodoProvider";
+
+                        export const useInitializeTodo = () => {
+                        
+                            const { addTask,updateTask } = useContext(TodoContext);
+                        
+                            const [value, setValue] = useState("");
+                        
+                            const handleValue = (e) => {
+                                const { target: task } = e;
+                                setValue(task.value);
+                            }
+                            const addTodo = () => {
+                                addTask({
+                                    id: Date.now(),
+                                    completed: false,
+                                    task: value
+                                })
+                                setValue("");
+                            }
+
+                            const handleUpdate = (e) => {
+                                updateTask(e.target.id);
+                                setValue("");
+
+                            }
+
+                            return {
+                                addTodo,
+                                handleValue,
+                                setValue,
+                                handleUpdate
+                            }
+                        }
+
+                        export default useInitializeTodo
+                    </textarea>
+                    <button>
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+
+            </li>
+        </ol>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
